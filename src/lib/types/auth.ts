@@ -1,13 +1,19 @@
+
 export interface User {
-  _id: string;
+  id: string;                 
   firstName: string;
   lastName: string;
   email: string;
-  role?: string;
+  role: "admin" | "customer" | "user";
   avatar?: string;
   createdAt?: string;
   updatedAt?: string;
 }
+
+
+/* =========================
+   INPUT TYPES
+========================= */
 
 export interface LoginInput {
   email: string;
@@ -42,9 +48,11 @@ export interface ChangePasswordInput {
   confirmNewPassword?: string;
 }
 
+
+
 export interface AuthResponse {
   success: boolean;
-  message?: string;
+  message: string;
   data?: {
     user: User;
     accessToken: string;
@@ -56,11 +64,21 @@ export interface VerifyOtpResponse {
   success: boolean;
   message: string;
   data: {
-    resetToken: string;
+    accessToken: string;
   };
 }
 
 export interface GenericResponse {
   success: boolean;
   message: string;
+}
+export interface VerifyEmailInput {
+  token: string; // bearer token
+  otp: string;
+}
+
+export interface VerifyOtp {
+  otp: string;
+  email?: string;  
+  token?: string; 
 }

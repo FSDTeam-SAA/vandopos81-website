@@ -1,4 +1,7 @@
 import api from "./api";
+import { AuthResponse, RegisterInput } from "../types/auth";
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // Define generic response type if not already available
 export interface ApiResponse<T = any> {
@@ -13,9 +16,20 @@ export const authService = {
     return response.data;
   },
   
-  register: async (data: any) => {
-    const response = await api.post("/auth/register", data);
-    return response.data;
+register: async (input: RegisterInput): Promise<AuthResponse> => {
+    const res = await fetch(`${baseUrl}/user/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+
+    const data: AuthResponse = await res.json();
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || "Registration failed");
+    }
+
+    return data;
   },
 
   forgotPassword: async (data: { email: string }) => {
@@ -24,13 +38,11 @@ export const authService = {
   },
 
   resetPassword: async (token: string, data: { newPassword: string }) => {
-    // Assuming the endpoint uses a query param or body. 
-    // Usually it's POST /auth/reset-password with token in body or header, 
-    // or POST /auth/reset-password/:token
-    // Based on typical patterns, let's assume body + header or just body.
-    // Given ResetPassword component uses it, let's assume consistent with backend.
-    // If unsure, sticking to a common pattern:
-    const response = await api.post(`/auth/reset-password`, { ...data, token });
+    const response = await api.post(`/auth/reset-password`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   },
 

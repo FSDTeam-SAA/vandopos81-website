@@ -17,26 +17,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {  useRegester } from "@/lib/hooks/useAuth";
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email"),
-  gender: z.string().min(1, "Gender is required"),
+
   password: z.string().min(6, "Password must be at least 6 characters"),
-  age: z.string().optional(),
-  address: z.string().optional(),
-  phoneNum: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -44,6 +42,7 @@ type FormValues = z.infer<typeof formSchema>;
 const Signup = () => {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState("");
+const { registerMutation } = useRegester();
 
   const router = useRouter();
 
@@ -53,67 +52,52 @@ const Signup = () => {
       firstName: "",
       lastName: "",
       email: "",
-      gender: "",
+
       password: "",
-      age: "",
-      address: "",
-      phoneNum: "",
     },
   });
 
-  async function onSubmit(values: FormValues) {
-    setIsPending(true);
-    setError("");
-    console.log("values", values);
-    try {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const res = await fetch(`${baseUrl}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
 
-      const data = await res.json();
-      console.log("datas", data?.message);
-      if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
-      } else if (data.success === "mail already registered") {
-        router.push(`/email-verify?email=${values.email}`);
-        throw new Error("Email already registered");
-      }
 
-      toast.success("Account created successfully!");
-      router.push(`/email-verify?email=${values.email}`);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Something went wrong");
-      toast.error(err.message || "Something went wrong");
-    } finally {
-      setIsPending(false);
+
+function onSubmit(values: FormValues) {
+  setError("");
+
+  registerMutation.mutate(values, {
+    onSuccess: (res) => {
+      const token = res?.data?.accessToken;
+    if (!token) {
+      toast.error("Failed to get verification token");
+      return;
     }
-  }
+
+    toast.success("Account created successfully!");
+    router.push(`/email-verify?token=${token}`);
+    },
+    onError: (err: any) => {
+      const message = err?.message || "Something went wrong";
+      setError(message);
+      toast.error(message);
+    },
+  });
+}
 
   return (
     <section
       className="min-h-screen flex items-center justify-center 
   flex-col gap-5 py-8"
     >
-
-
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-              {/* Logo */}
-      <div className="flex justify-center mb-2">
-        <Image
-          src="/images/logo.svg"
-          alt="logo"
-          width={50}
-          height={60}
-          className=""
-        />
-      </div>
+        {/* Logo */}
+        <div className="flex justify-center mb-2">
+          <Image
+            src="/images/logo.svg"
+            alt="logo"
+            width={50}
+            height={60}
+            className=""
+          />
+        </div>
         <h2 className="text-2xl font-semibold text-center text-auth-text mb-1">
           Create Your Account
         </h2>
@@ -160,7 +144,6 @@ const Signup = () => {
               />
             </div>
 
-
             {/* Email */}
             <FormField
               control={form.control}
@@ -176,9 +159,6 @@ const Signup = () => {
               )}
             />
 
-       
-
-  
             {/* Password */}
             <FormField
               control={form.control}
@@ -193,8 +173,6 @@ const Signup = () => {
                 </FormItem>
               )}
             />
-
-         
 
             {/* Sign Up Button */}
             <Button
