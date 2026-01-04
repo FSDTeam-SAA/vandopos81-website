@@ -1,19 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/app/api/auth/[...nextauth]/route.ts
 
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { jwtDecode } from "jwt-decode";
-import { JWT } from "next-auth/jwt";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-interface DecodedToken {
-  sub: string; // user ID
+/**
+ * Backend login response shape
+ */
+interface BackendUser {
+  id: string;
+  email: string;
   role: string;
-  name: string;
-  iat: number;
-  exp: number;
+  firstName: string;
+  lastName: string;
+  image?: any;
+}
+
+interface LoginResponse {
+  success: boolean;
+  message: string;
+  statusCode: number;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    user: BackendUser;
+  };
 }
 
 export const authOptions: NextAuthOptions = {
@@ -21,84 +33,91 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "demo@gmail.com",
+        },
+        password: {
+          label: "Password",
+          type: "password",
+        },
       },
 
       async authorize(credentials) {
         if (!baseUrl) {
-          throw new Error(
-            "NEXT_PUBLIC_API_URL is not defined in environment variables",
-          );
+          throw new Error("NEXT_PUBLIC_API_URL is not defined");
         }
 
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required");
+        }
 
-        try {
-          const res = await fetch(`${baseUrl}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
-          });
-
-          const data = await res.json();
-
-          if (!res.ok) {
-            // Forward the actual error message from backend
-            throw new Error(data.message || data.error || "Login failed");
-          }
-
-          const token = data.data?.token;
-          if (!token) throw new Error("No token received from backend");
-
-          const decoded = jwtDecode<DecodedToken>(token);
-
-          return {
-            id: decoded.sub,
+        const res = await fetch(`${baseUrl}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
             email: credentials.email,
-            role: decoded.role,
-            name: decoded.name,
-            accessToken: token, // Map backend 'token' to 'accessToken'
-          };
-        } catch (error: any) {
-          console.error("Authorize error:", error.message);
-          // Throw the specific error so NextAuth passes it to the client
-          throw new Error(error.message || "Authentication failed");
+            password: credentials.password,
+          }),
+        });
+
+        const result: LoginResponse = await res.json();
+
+        if (!res.ok || !result?.success) {
+          throw new Error(result?.message || "Login failed");
         }
+
+        const { accessToken, refreshToken, user } = result.data;
+
+        if (!accessToken || !refreshToken || !user) {
+          throw new Error("Invalid login response from server");
+        }
+
+        /**
+         * Returned object becomes `user` in jwt callback
+         */
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          name: `${user.firstName} ${user.lastName}`,
+          accessToken,
+          refreshToken,
+        };
       },
     }),
   ],
 
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: any }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role;
         token.name = user.name;
         token.accessToken = user.accessToken;
+        token.refreshToken = user.accessToken;
       }
       return token;
     },
 
-    async session({ session, token }: { session: any; token: JWT }) {
-      if (token && session.user) {
-        session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.role = token.role;
-        session.user.name = token.name;
-        session.user.accessToken = token.accessToken;
-        // Also attach accessToken to top level session if needed, but standard is session.user or session.accessToken
-        session.accessToken = token.accessToken;
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.role = token.role as string;
+        session.user.name = token.name as string;
       }
+
+      session.accessToken = token.accessToken as string;
+      session.refreshToken = token.accessToken as string;
+
       return session;
     },
   },
