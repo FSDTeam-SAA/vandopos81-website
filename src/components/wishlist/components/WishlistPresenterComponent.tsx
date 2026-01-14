@@ -1,29 +1,27 @@
 'use client'
 import WishlistCard from '@/components/shared/WishlistCard'
-import { useWishlistData } from '@/lib/hooks/wishlist'
+import { useRemoveFromWishlist, useWishlistData } from '@/lib/hooks/wishlist'
+import { useAddToCart } from '@/lib/hooks/cart'
 import React, { useState } from 'react'
 import Pagination from '../common/Pagination'
+import { motion, AnimatePresence, Variants } from 'framer-motion' // ✅ added
+import Skeleton from '../common/Skeleton'
+import { Product } from '@/lib/types/product'
 
 const WishlistPresenterComponent = () => {
   const [currentPage, setCurrentPage] = useState(1)
-  const {data, isError, isLoading} = useWishlistData(currentPage)
-  console.log('wishlist data', data)
-  
-  // Handle loading state
+  const { data, isError, isLoading } = useWishlistData(currentPage)
+  const { mutate: addToCart } = useAddToCart()
+  const { mutate: removeFromWishlist } = useRemoveFromWishlist()
+
   if (isLoading) {
     return (
       <section className='my-10 md:my-16 lg:my-20'>
-        <div className='container mx-auto'>
-          <div className="text-center py-10">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-            <p className="text-gray-600">Loading wishlist...</p>
-          </div>
-        </div>
+        <Skeleton />
       </section>
     )
   }
-  
-  // Handle error state
+
   if (isError || !data) {
     return (
       <section className='my-10 md:my-16 lg:my-20'>
@@ -38,15 +36,42 @@ const WishlistPresenterComponent = () => {
       </section>
     )
   }
-  
-  // Extract data from response
+
   const wishlistItems = data.data || []
   const meta = data.meta
   const totalPages = meta?.totalPage || 1
-  const totalItems = meta?.total || 0
-  
+  const totalItems = meta?.total || wishlistItems.length
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
+  }
+
+  const handleAddToCart = (product: Product) => {
+    addToCart({ productId: product._id, quantity: 1 })
+  }
+
+  const handleRemoveFromWishlist = (productId: string) => {
+    removeFromWishlist(productId)
+  }
+
+  /* 🔹 Motion variants */
+  const containerVariants = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: 0.12,
+      },
+    },
+  }
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.35, ease: 'easeOut' },
+    },
+    exit: { opacity: 0, y: -20 },
   }
 
   return (
@@ -61,8 +86,7 @@ const WishlistPresenterComponent = () => {
             {totalItems} {totalItems === 1 ? 'item' : 'items'} in your wishlist
           </p>
         </div>
-        
-        {/* Wishlist items */}
+
         {wishlistItems.length === 0 ? (
           <div className="text-center py-12 rounded-lg border-2 border-dashed border-gray-300">
             <div className="max-w-md mx-auto">
@@ -81,14 +105,32 @@ const WishlistPresenterComponent = () => {
           </div>
         ) : (
           <>
-            <div className=" space-y-10 gap-4 md:gap-6">
-              {wishlistItems.map((item) => (
-                <WishlistCard key={item._id} data={item} />
-              ))}
-            </div>
-            
+            {/* 🔹 Animated list */}
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              className="space-y-8"
+            >
+              <AnimatePresence>
+                {wishlistItems.map((item) => (
+                  <motion.div
+                    key={item._id}
+                    variants={itemVariants}
+                    exit="exit"
+                  >
+                    <WishlistCard
+                      data={item as unknown as Product}
+                      onAddToCart={handleAddToCart}
+                      onRemove={handleRemoveFromWishlist}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
             {/* Pagination */}
-            {totalPages > 1 && (
+            {wishlistItems.length > 1 && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

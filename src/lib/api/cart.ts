@@ -51,3 +51,15 @@ export async function removeCartItem(id: string) {
         throw new Error('An unexpected error occurred');
     }
 }
+
+export async function addToCart(productId: string, quantity: number = 1) {
+    try {
+        const res = await api.post(`/cart/add-to-cart`, { productId, quantity });
+        return res.data;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(error.message || 'Failed to add item to cart');
+        }
+        throw new Error('An unexpected error occurred');
+    }
+}

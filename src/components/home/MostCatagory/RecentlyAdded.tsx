@@ -1,27 +1,21 @@
+'use client'
 import MostCatagoryCard from "@/components/shared/MostCatagoryCard";
+import { useFetchTopRatedProduct } from "@/lib/hooks/product";
+import { TopRatedProduct } from "@/lib/types/mostcatagory";
 import React from "react";
 
 const RecentlyAdded = () => {
-  const data = [
-    {
-      image: "/images/weekly1.jpg",
-      tittle: "Angie's sweets & salty kettle",
-      rating: "40",
-      price: "22",
-    },
-    {
-      image: "/images/weekly2.jpg",
-      tittle: "Angie's sweets & salty kettle",
-      rating: "40",
-      price: "22",
-    },
-    {
-      image: "/images/weekly3.jpg",
-      tittle: "Angie's sweets & salty kettle",
-      rating: "40",
-      price: "22",
-    },
-  ];
+  const { data, isLoading, isError } = useFetchTopRatedProduct();
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center min-h-[400px]">Loading...</div>;
+  }
+
+  if (isError) {
+    return <div className="text-red-500">Failed to load top rated products.</div>;
+  }
+
+  const topRated = data?.data || [];
   return (
     <div>
       <div className="mb-7">
@@ -31,10 +25,14 @@ const RecentlyAdded = () => {
         <p className=" border-b  w-20 h-1 bg-[#BCE3C9] "></p>
       </div>
 
-      <div className="space-y-4  sm:space-y-5 lg:space-x-7">
-        {data.map((item, index) => (
-          <MostCatagoryCard key={index} data={item} />
-        ))}
+          <div className="space-y-4  sm:space-y-5 lg:space-x-7">
+        {topRated.length > 0 ? (
+          topRated.map((item: TopRatedProduct) => (
+            <MostCatagoryCard key={item._id} data={item} />
+          ))
+        ) : (
+          <p>No products found.</p>
+        )}
       </div>
     </div>
   );

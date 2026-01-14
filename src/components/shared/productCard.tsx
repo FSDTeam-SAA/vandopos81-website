@@ -1,15 +1,17 @@
 import Image from "next/image";
 import React from "react";
-import { ShoppingCart, Star, StarIcon } from "lucide-react";
+import { Heart, ShoppingCart, Star, StarIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Product } from "@/lib/types/product";
 import { motion } from "framer-motion"; // ✅ add
+import { useAddedWishlist } from "@/lib/hooks/wishlist";
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const {mutate}=useAddedWishlist()
   const productImage =
     product.images?.[0]?.url || "/images/placeholder-product.png";
 
@@ -42,13 +44,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
     return stars;
   };
 
+const handelWishlist=(id:string)=>{
+
+mutate(id)
+}
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }} // 👈 fade + slide in
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -6 }} // 👈 hover lift
+      whileHover={{ y: -6 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="group relative w-full max-w-[260px] mx-auto rounded-2xl border bg-white p-4 shadow-sm hover:shadow-lg"
+      className="group overflow-hidden relative w-full max-w-[260px] mx-auto rounded-2xl border bg-white p-4 shadow-sm hover:shadow-lg"
     >
       {product.productType === "Organic" && (
         <span className="absolute left-0 top-0 z-10 rounded-r-2xl rounded-tl-2xl bg-green-600 px-3 py-1 text-xs font-semibold text-white">
@@ -59,29 +66,32 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <button className="px-3 py-1 bg-primary absolute left-0 top-0 text-white rounded-tl-2xl rounded-r-2xl">
         13%
       </button>
+      <Button onClick={()=>handelWishlist(product._id)} className="rounded-full  -top-20 duration-400 transform transition-all ease-in-out  right-5 group-hover:right-5 group-hover:top-3 absolute  z-50! ">
+        <Heart />
+      </Button>
 
       {/* Image */}
       <motion.div
-        whileHover={{ scale: 1.05 }} // 👈 smooth zoom
+        whileHover={{ scale: 1.05 }}
         transition={{ duration: 0.3 }}
-        className="relative mx-auto h-[220px] w-full mt-8 overflow-hidden rounded-lg"
+        className="relative mx-auto h-50 w-full mt-8 overflow-hidden rounded-lg"
       >
         <Image
           src={productImage}
           alt={product.title || product.productName}
           fill
           className="object-cover"
-          sizes="(max-width: 260px) 100vw, 260px"
+          sizes="(max-width: 200px) 100vw, 200px"
         />
       </motion.div>
 
       {/* Content */}
-      <div className="mt-4 space-y-2">
-        <span className="text-xs text-gray-500 uppercase tracking-wide">
+      <div className="mt-2 space-y-2">
+        <span className="text-sm text-[#ADADAD]  tracking-wide">
           {categoryName}
         </span>
 
-        <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 h-10">
+        <h3 className="text-sm md:text-lg font-bold text-[#253D4E] line-clamp-2 mb-5">
           {product.title || product.productName}
         </h3>
 
@@ -90,22 +100,27 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <span className="ml-2 text-xs text-gray-500">({totalRatings})</span>
         </div>
 
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 mb-4">
           By <span className="font-medium text-green-600">{brandName}</span>
         </p>
 
-        {product.shortDescription && (
+        {/* {product.shortDescription && (
           <p className="text-xs text-gray-400 line-clamp-2">
             {product.shortDescription}
           </p>
-        )}
+        )} */}
 
         <div className="mt-4 flex items-center justify-between">
-          <h4 className="text-lg font-bold text-green-600">
-            ${product?.wholesaleId?.[0]?.palletItems?.[0]?.price}
-          </h4>
+          <div className="flex items-center gap-2">
+            <h4 className="text-lg font-bold text-primary">
+              ${product?.wholesaleId?.[0]?.palletItems?.[0]?.price || "N/A"}
+            </h4>
+            <h5 className="text-base font-medium text-[#ADADAD] line-through">
+              ${(product?.wholesaleId?.[0]?.palletItems?.[0]?.price || 0) - 2}
+            </h5>
+          </div>
 
-          <Button className="flex items-center gap-1 rounded-lg bg-primary/30 px-3 py-1.5 text-sm text-primary font-bold hover:bg-primary/40">
+          <Button className="flex items-center gap-1 rounded-lg bg-[#DEF9EC] px-3 py-1.5 text-sm text-primary font-bold hover:bg-primary/40">
             <ShoppingCart size={14} />
             Add
           </Button>
