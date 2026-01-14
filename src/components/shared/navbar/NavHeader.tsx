@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useWishlistData } from "@/lib/hooks/wishlist";
 
 import {
   DropdownMenu,
@@ -20,6 +21,7 @@ import {
   Truck,
   ChevronDown,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -27,7 +29,12 @@ import React, { useState } from "react";
 const NavHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const { data } = useWishlistData(currentPage);
+  const { data: session } = useSession();
+
+  const wishlist = data?.data?.length || 0;
   return (
     <header className="sticky top-0 z-50 ">
       <section className="">
@@ -44,26 +51,28 @@ const NavHeader = () => {
               </button>
 
               {/* Logo */}
-              <div className="shrink-0">
-                <Image
-                  src="/images/logo.svg"
-                  alt="logo"
-                  width={60}
-                  height={58}
-                  className="h-12 w-12 sm:h-14 sm:w-14"
-                />
-              </div>
+              <Link href={"/"}>
+                <div className="shrink-0">
+                  <Image
+                    src="/images/logo.svg"
+                    alt="logo"
+                    width={60}
+                    height={58}
+                    className="h-12 w-12 sm:h-14 sm:w-14"
+                  />
+                </div>
+              </Link>
 
               {/* Desktop Search - Hidden on mobile */}
               <div className="hidden md:flex ml-4 xl:ml-8 w-full max-w-sm lg:max-w-md xl:max-w-xl">
-                <div className="flex flex-1 items-center border-2 border-[#BCE3C9] rounded-full overflow-hidden">
-                  <div className="pl-4">
+                <div className="flex flex-1 items-center border-2 border-[#BCE3C9]  overflow-hidden">
+                  {/* <div className="pl-4">
                     <Search size={20} className="text-gray-400" />
-                  </div>
+                  </div> */}
                   <input
                     type="text"
                     placeholder="Search for products..."
-                    className="w-full px-3 py-3 outline-none"
+                    className="w-full px-3 py-2 outline-none"
                   />
                   <Button className="h-full rounded-none px-6">Search</Button>
                 </div>
@@ -85,9 +94,11 @@ const NavHeader = () => {
                       JOIN WITH US <ChevronDown size={16} className="" />
                     </Button>
                   </DropdownMenuTrigger>
-                 
 
-                  <DropdownMenuContent align="end" className="w-48 bg-primary/45 px-8">
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-48 bg-primary/45 px-8"
+                  >
                     <Link href="/driver">
                       <DropdownMenuItem className="cursor-pointer  hover:text-white transition-colors">
                         <div className="flex items-center gap-2 w-full">
@@ -111,24 +122,23 @@ const NavHeader = () => {
               {/* Icons Section */}
               <div className="flex items-center space-x-6">
                 {/* Wishlist */}
-                <Link href={'/wishlist'}>
-                
-                <div className="relative flex  gap-2 items-center text-gray-600 hover:text-primary transition-colors group">
-                  <div className="relative">
-                    <Heart size={22} />
-                    <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      0
+                <Link href={"/wishlist"}>
+                  <div className="relative flex  gap-2 items-center text-gray-600 hover:text-primary transition-colors group">
+                    <div className="relative">
+                      <Heart size={22} />
+                      <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {wishlist > 9 ? "9+" : wishlist}
+                      </span>
+                    </div>
+                    <span className="text-xs xl:text-base mt-1 hidden xl:block">
+                      Wishlist
                     </span>
                   </div>
-                  <span className="text-xs xl:text-base mt-1 hidden xl:block">
-                    Wishlist
-                  </span>
-                </div>
                 </Link>
 
                 {/* Cart */}
-                <Link href={"cart"} className=" cursor-pointer">
-                  <button className="relative flex cursor-pointer gap-2 items-center text-gray-600 hover:text-primary transition-colors group">
+                <Link href={"/cart"} className=" cursor-pointer">
+                  <div className="relative flex cursor-pointer gap-2 items-center text-gray-600 hover:text-primary transition-colors group">
                     <div className="relative">
                       <ShoppingCart size={22} />
                       <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -138,16 +148,23 @@ const NavHeader = () => {
                     <span className="text-xs xl:text-base mt-1 hidden xl:block">
                       Cart
                     </span>
-                  </button>
+                  </div>
                 </Link>
 
                 {/* Account */}
-                <button className="flex gap-2 items-center cursor-pointer text-gray-600 hover:text-primary transition-colors group">
-                  <UserRound size={22} />
-                  <span className="text-xs xl:text-base mt-1 hidden xl:block">
-                    Account
-                  </span>
-                </button>
+                <div>
+                  {session ? (
+                    <Link href="/profile" className="flex gap-2 items-center cursor-pointer text-gray-600 hover:text-primary transition-colors group">
+                      <UserRound size={20} />
+                      <span className="font-medium">Account</span>
+                    </Link>
+                  ) : (
+                    <Link href="/login" className="flex gap-2 items-center bg-primary/80 text-white py-0.5 px-2 rounded-sm cursor-pointer  hover:bg-primary  transition-colors group">
+                      <UserRound size={20} />
+                      <span className="font-medium">Login</span>
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -250,15 +267,17 @@ const NavHeader = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <button className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <span className="font-medium">Wishlist</span>
-                  <div className="relative">
-                    <Heart size={20} />
-                    <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      0
-                    </span>
-                  </div>
-                </button>
+                <Link href="/wishlist">
+                  <button className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    <span className="font-medium">Wishlist</span>
+                    <div className="relative">
+                      <Heart size={20} />
+                      <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {wishlist > 9 ? "9+" : wishlist}
+                      </span>
+                    </div>
+                  </button>
+                </Link>
                 <Link href={"/cart"} className="cursor-pointer">
                   <button className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-gray-50 transition-colors">
                     <span className="font-medium">Cart</span>
@@ -271,10 +290,21 @@ const NavHeader = () => {
                   </button>
                 </Link>
 
-                <button className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <span className="font-medium">Account</span>
-                  <UserRound size={20} />
-                </button>
+                {session ? (
+                  <Link href="/profile">
+                    <button className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                      <span className="font-medium">Account</span>
+                      <UserRound size={20} />
+                    </button>
+                  </Link>
+                ) : (
+                  <Link href="/login">
+                    <button className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                      <span className="font-medium">Login</span>
+                      <UserRound size={20} />
+                    </button>
+                  </Link>
+                )}
               </nav>
 
               {/* Additional Links */}

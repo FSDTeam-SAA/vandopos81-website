@@ -1,13 +1,27 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { decreaseQuantity, fetchCartData, increaseQuantity, removeCartItem } from "../api/cart";
+import { decreaseQuantity, fetchCartData, increaseQuantity, removeCartItem, addToCart } from "../api/cart";
 import { CartResponse } from "../types/cart";
 import { toast } from "sonner"; // Assuming sonner is used for toasts based on layout.tsx
 
 export function useFetchCartData() {
-  return useQuery<CartResponse, Error>({
-    queryKey: ["allProduct"], 
-    queryFn: () => fetchCartData(),
-  });
+    return useQuery<CartResponse, Error>({
+        queryKey: ["allProduct"],
+        queryFn: () => fetchCartData(),
+    });
+}
+
+export function useAddToCart() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ productId, quantity }: { productId: string, quantity: number }) => addToCart(productId, quantity),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["allProduct"] });
+            toast.success("Item added to cart");
+        },
+        onError: (error) => {
+            toast.error(error.message || "Failed to add item to cart");
+        }
+    });
 }
 
 export function useIncreaseQuantity() {

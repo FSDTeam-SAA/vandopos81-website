@@ -7,7 +7,7 @@ import TopRated from './TopRated'
 const MostCatagory = () => {
   return (
     <section className='my-10 md:my-16 lg:my-20'>
-        <div className='container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center justify-between'>
+        <div className='container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start justify-between'>
             <WeeklyCatagory />
             <CaseDeals />
             <RecentlyAdded />

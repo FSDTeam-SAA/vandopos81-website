@@ -13,7 +13,7 @@ export async function FeatureProduct(params?: ProductParams) {
     if (params?.limit) query.append("limit", String(params.limit));
     if (params?.productType) query.append("productType", params.productType);
     if (params?.categorySlug) query.append("categorySlug", params.categorySlug);
-    
+
     if (params?.minPrice !== undefined && params?.minPrice !== "") {
       query.append("minPrice", String(params.minPrice));
     }
@@ -25,6 +25,44 @@ export async function FeatureProduct(params?: ProductParams) {
     const url = `/product/all${queryString ? `?${queryString}` : ""}`;
 
     const res = await api.get(url);
+    return res.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message || "Failed to fetch products");
+    }
+    throw error;
+  }
+}
+
+export async function FeatureHomeProduct() {
+  try {
+    const res = await api.get(`/product/featured`);
+    return res.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message || "Failed to fetch products");
+    }
+    throw error;
+  }
+}
+
+export async function topReatedProduct() {
+  try {
+    const res = await api.get(`/product/top-rated`);
+    return res.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message || "Failed to fetch products");
+    }
+    throw error;
+  }
+}
+
+
+// 
+export async function caseDealsProduct() {
+  try {
+    const res = await api.get(`/product/case`);
     return res.data;
   } catch (error) {
     if (error instanceof Error) {
