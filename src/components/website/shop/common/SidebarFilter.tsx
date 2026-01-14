@@ -19,8 +19,22 @@ const REGIONS = [
   { id: 'latin', label: 'Latin American', icon: '💃' },
   { id: 'asian', label: 'Asian', icon: '🥢' },
   { id: 'mediterranean', label: 'Mediterranean', icon: '🏺' },
-]
-
+  { id: 'indian', label: 'Indian', icon: '🇮🇳' },
+  { id: 'middle-eastern', label: 'Middle Eastern', icon: '🕌' },
+  { id: 'european', label: 'European', icon: '🏰' },
+  { id: 'north-american', label: 'North American', icon: '🇺🇸' },
+  { id: 'south-american', label: 'South American', icon: '🌋' },
+  { id: 'oceanian', label: 'Oceanian', icon: '🦘' },
+  { id: 'south-asian', label: 'South Asian', icon: '🕌' },
+  { id: 'east-asian', label: 'East Asian', icon: '🎌' },
+  { id: 'southeast-asian', label: 'Southeast Asian', icon: '🏮' },
+  { id: 'central-asian', label: 'Central Asian', icon: '🐫' },
+  { id: 'balkan', label: 'Balkan', icon: '⛰️' },
+  { id: 'scandinavian', label: 'Scandinavian', icon: '❄️' },
+  { id: 'baltic', label: 'Baltic', icon: '🌲' },
+  { id: 'pacific-islander', label: 'Pacific Islander', icon: '🌺' },
+  { id: 'nordic', label: 'Nordic', icon: '🛷' },
+];
 const FOOD_TYPES = [
   { id: 'grains', label: 'Grains & Rice' },
   { id: 'flours', label: 'Flours & Fufu Mixes' },
@@ -68,10 +82,10 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
       
       {/* Shop by Region */}
       <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-4 px-2 border-l-4 border-green-500 rounded-sm">
+        <h3 className="text-lg font-bold text-gray-900 mb-4 px-2 border-l-2 border-green-100 rounded-sm">
           Shop by region
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-60  overflow-y-scroll">
           {REGIONS.map((region) => (
             <button
               key={region.id}
@@ -94,7 +108,7 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
 
       {/* Fill by Price */}
       <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-6 px-2 border-l-4 border-green-500 rounded-sm">
+        <h3 className="text-lg font-bold text-gray-900 mb-6 px-2 border-l-2 border-green-100 rounded-sm">
           Fill by price
         </h3>
         
@@ -138,10 +152,10 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
 
       {/* Food Type */}
       <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-4 px-2 border-l-4 border-green-500 rounded-sm">
+        <h3 className="text-lg font-bold text-gray-900 mb-4 px-2 border-l-2 border-green-100 rounded-sm">
             Food type
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-60  overflow-y-scroll">
             {FOOD_TYPES.map(type => (
                 <button
                     key={type.id}

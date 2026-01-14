@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type ProductParams = {
   search?: string;
   region?: string;
@@ -152,3 +153,6 @@ export interface ProductQueryParams {
   isFeatured?: boolean;
   categorySlug?: string;
 }
+
+
+// feature product

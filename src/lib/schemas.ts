@@ -55,18 +55,19 @@ export const driverRegistrationSchema = z.object({
   // Personal Information
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  phone: z.string().min(10, "Phone number must be at least 10 characters"),
   email: z.string().email("Invalid email address"),
-  experience: z.string().min(1, "Experience is required"),
-  expiry: z.string().min(1, "License expiry is required"),
+  phone: z.string().min(10, "Phone number must be at least 10 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  
+  // Experience & License
+  yearsOfExperience: z.string().min(1, "Years of experience is required"),
+  licenseExpiryDate: z.string().min(1, "License expiry date is required"),
 
   // Location Information
-  warehouseLocation: z.string().min(2, "Warehouse name/location is required"),
-  street: z.string().min(5, "Street must be at least 5 characters"),
   address: z.string().min(5, "Address must be at least 5 characters"),
-  location: z.string().min(2, "Location must be at least 2 characters"),
+  city: z.string().min(2, "City must be at least 2 characters"),
   state: z.string().min(2, "State must be at least 2 characters"),
-  postalCode: z.string().min(3, "Postal code must be at least 3 characters"),
+  zipCode: z.string().min(3, "Zip code must be at least 3 characters"),
   
   // Documents
   documents: z.any().optional(),

@@ -19,37 +19,33 @@ const DriverContainer = () => {
     defaultValues: {
       firstName: "",
       lastName: "",
-      phone: "",
       email: "",
-      experience: "",
-      expiry: "",
-      warehouseLocation: "",
-      street: "",
+      phone: "",
+      password: "",
+      yearsOfExperience: "",
+      licenseExpiryDate: "",
       address: "",
-      location: "",
+      city: "",
       state: "",
-      postalCode: "",
+      zipCode: "",
     },
   });
 
   const onSubmit = (data: DriverRegistrationFormData) => {
     const formData = new FormData();
 
-    // Personal Information
+    // Mapping fields to match backend requirements
     formData.append("firstName", data.firstName);
     formData.append("lastName", data.lastName);
-    formData.append("phone", data.phone);
     formData.append("email", data.email);
-    formData.append("experience", data.experience);
-    formData.append("expiry", data.expiry);
-
-    // Location
-    formData.append("warehouseLocation", data.warehouseLocation);
-    formData.append("street", data.street);
+    formData.append("phone", data.phone);
+    formData.append("password", data.password);
+    formData.append("yearsOfExperience", data.yearsOfExperience);
+    formData.append("licenseExpiryDate", data.licenseExpiryDate);
     formData.append("address", data.address);
-    formData.append("location", data.location);
+    formData.append("city", data.city);
     formData.append("state", data.state);
-    formData.append("postalCode", data.postalCode);
+    formData.append("zipCode", data.zipCode);
 
     // Documents
     if (data.documents) {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ProductParams } from '@/lib/types/product';
 
+
 interface FilterItem {
   id: string;
   label: string;
@@ -35,6 +36,7 @@ const HeadShowFilter: React.FC<HeadShowFilterProps> = ({
      { label: 'Snack', href: '#' }
   ],
 }) => {
+ 
   // Aggregate all active filters for display
   const activeChips: { id: string; type: 'category' | 'region' | 'productType'; value: string; label: string }[] = [];
 

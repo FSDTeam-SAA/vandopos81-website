@@ -1,17 +1,11 @@
 "use client";
 import ProductCard from "@/components/shared/productCard";
-import { useFetchAllProduct } from "@/lib/hooks/product";
+import { useFetchAllProduct, useFetchFeatureProduct } from "@/lib/hooks/product";
 import { Product } from "@/lib/types/product";
 import React from "react";
 
 const FeatureProduct = () => {
-  const { data, isLoading, error } = useFetchAllProduct({
-    search: "",
-    region: "",
-    page: 1,
-    limit: 10,
-    productType: "",
-  });
+  const { data, isLoading, error } = useFetchFeatureProduct();
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Something went wrong: {error.message}</p>;

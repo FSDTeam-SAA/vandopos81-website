@@ -171,6 +171,26 @@ const DriverPresenter = ({
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700 font-medium">
+                          Password *
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="********"
+                            {...field}
+                            className="border-gray-300 focus:border-primary focus:ring-primary"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
 
@@ -195,7 +215,7 @@ const DriverPresenter = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
-                    name="experience"
+                    name="yearsOfExperience"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-gray-700 font-medium">
@@ -203,7 +223,7 @@ const DriverPresenter = ({
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="e.g. 5 years"
+                            placeholder="e.g. 5"
                             {...field}
                             className="border-gray-300 focus:border-primary focus:ring-primary"
                           />
@@ -214,7 +234,7 @@ const DriverPresenter = ({
                   />
                   <FormField
                     control={form.control}
-                    name="expiry"
+                    name="licenseExpiryDate"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-gray-700 font-medium">
@@ -256,35 +276,16 @@ const DriverPresenter = ({
                       d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                     />
                   </svg>
-                  Location Information
+                  Street Address
                 </h2>
                 <div className="space-y-6">
                   <FormField
                     control={form.control}
-                    name="warehouseLocation"
+                    name="address"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-gray-700 font-medium">
-                          Warehouse Name/Location *
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Main warehouse, Distribution center, etc."
-                            {...field}
-                            className="border-gray-300 focus:border-primary focus:ring-primary"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="street"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700 font-medium">
-                          Street *
+                          Street Address *
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -300,34 +301,15 @@ const DriverPresenter = ({
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <FormField
                       control={form.control}
-                      name="address"
+                      name="city"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-gray-700 font-medium">
-                            Address *
+                            City *
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Address"
-                              {...field}
-                              className="border-gray-300 focus:border-primary focus:ring-primary"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="location"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-700 font-medium">
-                            Location *
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Location"
+                              placeholder="City"
                               {...field}
                               className="border-gray-300 focus:border-primary focus:ring-primary"
                             />
@@ -355,26 +337,26 @@ const DriverPresenter = ({
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium">
+                            Zip Code *
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Zip Code"
+                              {...field}
+                              className="border-gray-300 focus:border-primary focus:ring-primary"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
-                  <FormField
-                    control={form.control}
-                    name="postalCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700 font-medium">
-                          Postal Code *
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="12345"
-                            {...field}
-                            className="border-gray-300 focus:border-primary focus:ring-primary"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
               </div>
 
