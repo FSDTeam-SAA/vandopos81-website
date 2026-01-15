@@ -53,16 +53,17 @@ const BannerSlider = () => {
 
   // Auto slide
   useEffect(() => {
-    timerRef.current && clearInterval(timerRef.current)
+    if (timerRef.current) clearInterval(timerRef.current)
     timerRef.current = setInterval(next, 7000)
-    return () => timerRef.current && clearInterval(timerRef.current)
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
   }, [next, index])
 
   // Touch support
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX
   }
-
   const onTouchEnd = (e: React.TouchEvent) => {
     if (!touchStartX.current) return
     const diff = touchStartX.current - e.changedTouches[0].clientX
