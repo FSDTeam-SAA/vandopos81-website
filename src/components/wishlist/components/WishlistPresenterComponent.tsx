@@ -47,7 +47,8 @@ const WishlistPresenterComponent = () => {
   }
 
   const handleAddToCart = (product: Product) => {
-    addToCart({ productId: product._id, quantity: 1 })
+    const variantId = product.variants?.[0]?._id || ""
+    addToCart({ productId: product._id, variantId, quantity: 1 })
   }
 
   const handleRemoveFromWishlist = (productId: string) => {
