@@ -27,7 +27,7 @@ const PersonalInformationPresenter = ({
   isLoading = false,
   profile
 }: PersonalInformationPresenterProps) => {
-  console.log('profile edit data',profile)
+  // console.log('profile edit data',profile)
   const profileData=profile?.data;
   return (
     <div className="flex-1 bg-white rounded-lg border border-gray-200 p-8">
